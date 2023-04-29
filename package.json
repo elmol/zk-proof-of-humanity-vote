@@ -1,0 +1,15 @@
+{
+  "name": "zk-poh-vote",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Securely vote anonymously with proof of humanity",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspaces foreach -pi run dev",
+    "local": "yarn workspace contracts hardhat node",
+    "dev:web-app": "yarn workspace web-app dev"
+  },
+  "packageManager": "yarn@3.2.1"
+}

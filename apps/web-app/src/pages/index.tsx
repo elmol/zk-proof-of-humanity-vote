@@ -1,18 +1,21 @@
 import { useZkVotingPollId, useZkVotingProposal } from "@/generated/zk-voting";
 import { Badge, Box, Button, Container, Heading, Radio, RadioGroup, Stack, Stat, StatGroup, StatLabel, StatNumber, Text } from "@chakra-ui/react";
+import { getContractAddress } from "ethers/lib/utils.js";
 import Head from "next/head";
-import { useEffect } from "react";
-import { useZkProofOfHumanity } from "zkpoh-widget";
+import { useEffect, useState } from "react";
+import { ZKPoHConnect, useZkProofOfHumanity } from "zkpoh-widget";
 
 export default function Main() {
   const { data: pollId } = useZkVotingPollId();
   const { data: proposal } = useZkVotingProposal();
 
-  const zkPoHcontract = useZkProofOfHumanity({contractAddress:'0x611F0278dE9D2Bd4E38F15001B6410B4A915275f'});
+  const contractAddress = '0x611F0278dE9D2Bd4E38F15001B6410B4A915275f'
+  const zkPoHcontract = useZkProofOfHumanity({contractAddress});
 
   useEffect(() => {
    console.log("zkpoh address:",zkPoHcontract?.address)
   }, [zkPoHcontract?.address])
+  const [ballot, setBallot] = useState('YES')
   
   return (
     <>
@@ -36,20 +39,17 @@ export default function Main() {
             {proposal && proposal}
           </Text>
           <Stack direction={"column"} spacing={3} align={"center"} alignSelf={"center"} position={"relative"}>
-            <RadioGroup defaultValue="2">
+            <RadioGroup onChange={setBallot} value={ballot} defaultValue="YES">
               <Stack spacing={5} direction="row">
-                <Radio colorScheme="green" value="1">
+                <Radio colorScheme="green" value="YES">
                   Yes 👍
                 </Radio>
-                <Radio colorScheme="red" value="2">
+                <Radio colorScheme="red" value="NO">
                   No 👎
                 </Radio>
               </Stack>
             </RadioGroup>
-            <Button colorScheme="blue" width="100%">
-              Vote
-            </Button>
-
+            <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress}>Vote</ZKPoHConnect>
             <StatGroup w="100%" borderWidth="1px" borderRadius="lg" p={2}>
               <Stat>
                 <StatNumber>345</StatNumber>

@@ -1,5 +1,6 @@
 import { useZkVotingPollId, useZkVotingProposal } from "@/generated/zk-voting";
 import { Badge, Box, Container, Heading, Radio, RadioGroup, Stack, Stat, StatGroup, StatLabel, StatNumber, Text } from "@chakra-ui/react";
+import { BigNumber } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils.js";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
@@ -9,7 +10,7 @@ export default function Main() {
   const { data: pollId } = useZkVotingPollId();
   const { data: proposal } = useZkVotingProposal();
 
-  const contractAddress = '0x611F0278dE9D2Bd4E38F15001B6410B4A915275f'
+  const contractAddress = '0x3575E04983C401f26fA02FC09f6EE97e44dF296B'
   const zkPoHContract = useZkProofOfHumanity({contractAddress});
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export default function Main() {
   const count = useCallback(
     (ballotType: string) => {
       const ballot32Type = formatBytes32String(ballotType);
-      return ballots?.reduce((n: number, ballot: any) => (ballot.signal == ballot32Type ? n + 1 : n), 0);
+      return ballots?.reduce((n: number, ballot: any) => (BigNumber.from(ballot.signal).eq(BigNumber.from(ballot32Type)) ? n + 1 : n), 0);
     },
     [ballots]
   );

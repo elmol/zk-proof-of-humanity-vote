@@ -32,7 +32,7 @@
     "tailwindcss": "3.3.2",
     "typescript": "5.0.4",
     "wagmi": "^0.12.1",
-    "zkpoh-widget": "0.1.5"
+    "zkpoh-widget": "0.1.6"
   },
   "devDependencies": {
     "@wagmi/cli": "^0.1.15"

@@ -46,8 +46,8 @@ export const zkVotingABI = [
  * -
  */
 export const zkVotingAddress = {
-  1337: '0xFEcb9C97B3CeA50D69B4f70571b622394441030D',
-  31337: '0xFEcb9C97B3CeA50D69B4f70571b622394441030D',
+  1337: '0x4B7Bf41ff55f97e7901eeC06b171Df1c7EA71EF4',
+  31337: '0x4B7Bf41ff55f97e7901eeC06b171Df1c7EA71EF4',
 } as const
 
 /**

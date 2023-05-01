@@ -1,22 +1,31 @@
 import { useZkVotingPollId, useZkVotingProposal } from "@/generated/zk-voting";
-import { Badge, Box, Button, Container, Heading, Radio, RadioGroup, Stack, Stat, StatGroup, StatLabel, StatNumber, Text } from "@chakra-ui/react";
-import { getContractAddress } from "ethers/lib/utils.js";
+import { Badge, Box, Container, Heading, Radio, RadioGroup, Stack, Stat, StatGroup, StatLabel, StatNumber, Text } from "@chakra-ui/react";
+import { formatBytes32String } from "ethers/lib/utils.js";
 import Head from "next/head";
-import { useEffect, useState } from "react";
-import { ZKPoHConnect, useZkProofOfHumanity } from "zkpoh-widget";
+import { useCallback, useEffect, useState } from "react";
+import { ZKPoHConnect, useZkProofOfHumanity, useZkProofOfHumanitySignals } from "zkpoh-widget";
 
 export default function Main() {
   const { data: pollId } = useZkVotingPollId();
   const { data: proposal } = useZkVotingProposal();
 
   const contractAddress = '0x611F0278dE9D2Bd4E38F15001B6410B4A915275f'
-  const zkPoHcontract = useZkProofOfHumanity({contractAddress});
+  const zkPoHContract = useZkProofOfHumanity({contractAddress});
 
   useEffect(() => {
-   console.log("zkpoh address:",zkPoHcontract?.address)
-  }, [zkPoHcontract?.address])
+   console.log("zkpoh address:",zkPoHContract?.address)
+  }, [zkPoHContract?.address])
+ 
   const [ballot, setBallot] = useState('YES')
-  
+  const ballots = useZkProofOfHumanitySignals({contractAddress, externalNullifier:pollId})
+  const count = useCallback(
+    (ballotType: string) => {
+      const ballot32Type = formatBytes32String(ballotType);
+      return ballots?.reduce((n: number, ballot: any) => (ballot.signal == ballot32Type ? n + 1 : n), 0);
+    },
+    [ballots]
+  );
+
   return (
     <>
       <Head>
@@ -52,12 +61,12 @@ export default function Main() {
             <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress}>Vote</ZKPoHConnect>
             <StatGroup w="100%" borderWidth="1px" borderRadius="lg" p={2}>
               <Stat>
-                <StatNumber>345</StatNumber>
+                <StatNumber>{count('YES')}</StatNumber>
                 <StatLabel>👍</StatLabel>
               </Stat>
               <Stat>
                 <StatLabel>👎</StatLabel>
-                <StatNumber>45</StatNumber>
+                <StatNumber>{count('NO')}</StatNumber>
               </Stat>
             </StatGroup>
           </Stack>

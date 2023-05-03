@@ -186,3 +186,40 @@ useEffect(() => {
   console.log("zkpoh address:", zkPoHContract?.address);
 }, [zkPoHContract?.address]);
 ```
+
+## Adding the Private Vote Button to the UI
+
+We will now configure the vote button to enable voting for or against a proposal. The pollId or proposal ID, which is randomly generated, will be used as an external nullifier to ensure that a user cannot vote for the same proposal twice. The signal is a string value of 'YES' or 'NO' indicating whether the user agrees or disagrees with the proposal.
+
+To configure the vote button, we can use the following basic code:
+
+```html
+<ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress}>Vote</ZKPoHConnect>
+```
+
+Here, `ballot` is either 'YES' or 'NO', and `contractAddress` is hardcoded for this instance since we are forking `goerli`.
+
+So, the complete code is below
+
+```typescript
+...
+  const { data: pollId } = useZkVotingPollId();
+  const contractAddress = '0x3575E04983C401f26fA02FC09f6EE97e44dF296B'
+  const [ballot, setBallot] = useState('YES')
+...
+```
+
+``` html
+  <RadioGroup onChange={setBallot} value={ballot} defaultValue="YES">
+    <Stack spacing={5} direction="row">
+      <Radio colorScheme="green" value="YES">
+        Yes 👍
+      </Radio>
+      <Radio colorScheme="red" value="NO">
+        No 👎
+      </Radio>
+    </Stack>
+  </RadioGroup>
+  <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress}>Vote</ZKPoHConnect>
+```
+Now that we have added the vote button, we can now vote privately on the proposal using the ZKPoH protocol.

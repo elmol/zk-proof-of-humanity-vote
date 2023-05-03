@@ -43,7 +43,7 @@ This template includes a basic Next.js web application with a simple design usin
 
 Here is the `_app.tsx` configuration:
 
-```
+```typescript
 export default function App({ Component, pageProps }: AppProps) {
   const { chains, provider } = configureChains([goerli, localhost], [publicProvider()]);
 
@@ -69,13 +69,13 @@ and you can find the whole app in `apps/web-app/src/pages/index.tsx`
 
 To get started, first install all dependencies for the initial app using:
 
-```
+```shell
 yarn install
 ```
 
 Next, copy the `.env.example` file and rename it to `.env`. You will need an Alchemy key for the `Goerli` network for forking. Add the key in `.env`as follows:
 
-```
+```shell
 ETHEREUM_URL_KEY=<alchemy key>
 ```
 
@@ -83,7 +83,7 @@ In the root directory of the cloned template, there are two yarn scripts availab
 
 To run the local node with Goerli fork, use:
 
-```
+```shell
 yarn local
 ```
 
@@ -91,7 +91,7 @@ Note that this command should be run in a standalone terminal window and left ru
 
 To deploy the contract and run the web app in development mode, use:
 
-```
+```shell
 yarn dev
 ```
 
@@ -100,7 +100,8 @@ yarn dev
 To ensure everything works properly, you need to make the following configurations:
 
 - In `apps/contracts/hardhat.config.ts`, set the `blockNumber` to `8924675`:
-```
+
+```typescript
 hardhat: {
   chainId: 1337,
   forking: {
@@ -111,7 +112,8 @@ hardhat: {
 ```
 
 - In `apps/web-app/wagmi.config.ts`, set the address of the ZKVoting contract to `0x5bCC3154698bBC205ABF09351A52DD2d1A39F608`:
-```
+
+```typescript
 deployments: {
   ZKVoting: {
     31337: '0x5bCC3154698bBC205ABF09351A52DD2d1A39F608',
@@ -146,7 +148,7 @@ apps/web-app$ yarn add zkpoh-widget
 
 To support the `fs` module, you need to add or replace the following configuration in the `apps/web-app/next.config.js` file:
 
-```
+```typescript
 /** @type {import('next').NextConfig} */
 const fs = require("fs")
 
@@ -174,7 +176,7 @@ To do this, we need to edit `apps/web-app/src/pages/index.tsx` and add the follo
 
 Note that in this case, the `contractAddress` is hardcoded to the current address of the zk proof of humanity contract on the Goerli testnet because we are working with a fork. In other cases, it's not necessary to hardcode it as it will take the address of the selected network.
 
-```
+```typescript
 import { useZkProofOfHumanity } from 'zkpoh-widget';
 
 const contractAddress = '0x3575E04983C401f26fA02FC09f6EE97e44dF296B';
@@ -264,6 +266,8 @@ With these changes, we can now vote privately and see the updated results in rea
 
 In this post, we walked through how to use the zkpoh-widget React library to create a distributed voting application that allows anyone registered in Proof of Humanity to vote privately using zkPoH, without revealing their identity. We started by setting up the environment and connecting to the zkPoH contract. Then, we implemented the vote button with zkPoH integration, ensuring that users could not vote twice. Finally, we demonstrated how to display real-time voting results using the useZkProofOfHumanitySignals hook.
 
-We hope this example has shown you how powerful zkPoH can be in creating secure and anonymous applications. If you're interested in trying this example yourself or want to explore the zkpoh-widget library further, the final code can be found on our Github repository using this tag: <<link>>.
+We hope this example has shown you how powerful zkPoH can be in creating secure and anonymous applications. If you're interested in trying this example yourself or want to explore the zkpoh-widget library further, the final code can be found on our Github repository using the following tag
+
+`git clone --depth 1 --branch complete-voting-example https://github.com/elmol/zk-proof-of-humanity-vote.git` Alternatively, you can also directly download it from https://github.com/elmol/zk-proof-of-humanity-vote/releases/tag/complete-voting-example
 
 Your amazing zkPoH projects are eagerly awaited!

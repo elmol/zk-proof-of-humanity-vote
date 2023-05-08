@@ -134,8 +134,8 @@ To ensure that your initial Dapp configuration is correct and running successful
 
 If your configuration is correct, you should see the `pollId` and `proposal text` displayed on the screen, as shown in the screenshot below:
 
-<<add screenshot>>
-
+![Screenshot from 2023-05-05 15-14-08](https://user-images.githubusercontent.com/5402004/236940034-28f7d42b-b6ed-40f9-9b5a-3e85f049709f.png)
+ 
 ## Installing the ZK-POH Widget Library
 
 With the initial configuration done, it's time to install and configure the ZK-POH Widget Library to enable private voting using the ZK Proof of Humanity protocol. Follow the steps below to install the necessary dependencies and the latest version of the library:

@@ -124,6 +124,18 @@ deployments: {
 
 - Run `yarn wagmi generate` on `apps/web-app/` to generate access to the hardcoded contract address.
 
+### Verify Your Initial Dapp Configuration
+
+To ensure that your initial Dapp configuration is correct and running successfully, follow these steps:
+
+1. Access `http://localhost:3000` in a browser.
+2. Select the `localhost` network in Metamask.
+3. Connect to the Dapp with any account.
+
+If your configuration is correct, you should see the `pollId` and `proposal text` displayed on the screen, as shown in the screenshot below:
+
+<<add screenshot>>
+
 ## Installing the ZK-POH Widget Library
 
 With the initial configuration done, it's time to install and configure the ZK-POH Widget Library to enable private voting using the ZK Proof of Humanity protocol. Follow the steps below to install the necessary dependencies and the latest version of the library:

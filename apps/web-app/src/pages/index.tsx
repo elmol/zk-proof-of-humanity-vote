@@ -1,4 +1,4 @@
-import { useZkVotingPollId, useZkVotingProposal } from "@/generated/zk-voting";
+import { useZkVotingPollIds, useZkVotingPolls, useZkVotingRead } from "@/generated/zk-voting";
 import { Badge, Box, Container, Heading, Radio, RadioGroup, Stack, Stat, StatGroup, StatLabel, StatNumber, Text } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils.js";
@@ -7,8 +7,13 @@ import { useCallback, useEffect, useState } from "react";
 import { ZKPoHConnect, useZkProofOfHumanity, useZkProofOfHumanitySignals } from "zkpoh-widget";
 
 export default function Main() {
-  const { data: pollId } = useZkVotingPollId();
-  const { data: proposal } = useZkVotingProposal();
+  const { data: pollId } = useZkVotingPollIds({
+    args: [BigNumber.from("0")]
+  });
+  const { data: proposal } = useZkVotingRead({
+    functionName: "polls",
+    args: [pollId ? pollId : BigNumber.from("0")],
+});
 
   const contractAddress = '0x3575E04983C401f26fA02FC09f6EE97e44dF296B'
   const zkPoHContract = useZkProofOfHumanity({contractAddress});

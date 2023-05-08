@@ -1,12 +1,17 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+//SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
 
 contract ZKVoting {
-    string public proposal;
-    uint256 public pollId;
+    //pollId --> proposal text
+    mapping(uint256 => string) public polls;
+    uint256[] public pollIds;
 
-    constructor(uint256 _pollId, string memory _proposal) {
-        pollId = _pollId;
-        proposal = _proposal;
+    function addPoll(uint256 _pollId, string memory _proposal) public {
+        polls[_pollId] = _proposal;
+        pollIds.push(_pollId);
+    }
+
+    function getPollIds() public view returns (uint256[] memory) {
+        return pollIds;
     }
 }

@@ -32,8 +32,9 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import NoSSR from "react-no-ssr";
 import { useAccount, useDisconnect, useNetwork } from "wagmi";
-import { ButtonActionState, ZKPoHConnect, useIsRegisteredInPoH, useZkProofOfHumanity, useZkProofOfHumanitySignals } from "zkpoh-widget";
+import { ButtonActionState, ConnectionState, ConnectionStateType, ZKPoHConnect, useIsRegisteredInPoH, useZkProofOfHumanity, useZkProofOfHumanitySignals } from "zkpoh-widget";
 import Card from "../components/Card";
+import theme from "../styles/index";
 
 export default function Main() {
   const { address, isConnected } = useAccount();
@@ -51,7 +52,7 @@ export default function Main() {
   const contractAddress = "0x3575E04983C401f26fA02FC09f6EE97e44dF296B";
   const zkPoHContract = useZkProofOfHumanity({ contractAddress });
 
-  const { isHuman } = useIsRegisteredInPoH({ address });
+  const { isHuman } = useIsRegisteredInPoH({ address, contractAddress });
   const [_identity, setIdentity] = useState<Identity>();
   const [_addressIdentity, setAddressIdentity] = useState<`0x${string}` | undefined>();
   useEffect(() => {
@@ -61,6 +62,16 @@ export default function Main() {
   const { setLogs } = useContext(LogsContext);
   function handleLog(state: ButtonActionState) {
     setLogs(state.logs);
+  }
+  const [connectionStateType, setConnectionStateType] = useState<ConnectionStateType>();
+  const [helpText, setHelpText] = useState<string>();
+  function handleChangeState(state: ConnectionState) {
+    setConnectionStateType(state.stateType);
+    setHelpText(state.helpText);
+    if (state.stateType == "IDENTITY_GENERATED") {
+      setIdentity(state.identity);
+      setAddressIdentity(state.address);
+    }
   }
 
   const [ballot, setBallot] = useState("YES");
@@ -179,7 +190,7 @@ export default function Main() {
                 </Radio>
               </Stack>
             </RadioGroup>
-            <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress} onLog={handleLog}>
+            <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress} onLog={handleLog} theme={theme} onChangeState={handleChangeState}>
               Vote
             </ZKPoHConnect>
             <StatGroup w="100%" borderWidth="1px" borderRadius="lg" p={2}>

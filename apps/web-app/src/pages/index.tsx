@@ -91,11 +91,6 @@ export default function Main() {
 
   return (
     <>
-      <Head>
-        <title>Realm Referendum</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <NoSSR>
         <Card bg={"secondaryGray.900"} flexDirection="column" w="99%" p="5px" px="5px" mt="5px" mx="auto">
           <HStack align="center" justify="right" px={{ base: 4 }}>

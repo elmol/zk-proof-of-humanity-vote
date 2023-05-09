@@ -1,5 +1,6 @@
-import { useZkVotingPollIds, useZkVotingRead } from "@/generated/zk-voting";
 import { EtherScanLink } from "@/components/EtherScanLink";
+import LogsContext from "@/context/LogsContext";
+import { useZkVotingPollIds, useZkVotingRead } from "@/generated/zk-voting";
 import {
   Badge,
   Box,
@@ -23,16 +24,16 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { Identity } from "@semaphore-protocol/identity";
 import { BigNumber } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils.js";
 import Head from "next/head";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import NoSSR from "react-no-ssr";
 import { useAccount, useDisconnect, useNetwork } from "wagmi";
-import { ZKPoHConnect, useIsRegisteredInPoH, useZkProofOfHumanity, useZkProofOfHumanitySignals } from "zkpoh-widget";
+import { ButtonActionState, ZKPoHConnect, useIsRegisteredInPoH, useZkProofOfHumanity, useZkProofOfHumanitySignals } from "zkpoh-widget";
 import Card from "../components/Card";
-import { Identity } from "@semaphore-protocol/identity";
 
 export default function Main() {
   const { address, isConnected } = useAccount();
@@ -47,17 +48,20 @@ export default function Main() {
     args: [pollId ? pollId : BigNumber.from("0")],
   });
 
-  const contractAddress = '0x3575E04983C401f26fA02FC09f6EE97e44dF296B'
-  const zkPoHContract = useZkProofOfHumanity({contractAddress});
+  const contractAddress = "0x3575E04983C401f26fA02FC09f6EE97e44dF296B";
+  const zkPoHContract = useZkProofOfHumanity({ contractAddress });
 
   const { isHuman } = useIsRegisteredInPoH({ address });
   const [_identity, setIdentity] = useState<Identity>();
   const [_addressIdentity, setAddressIdentity] = useState<`0x${string}` | undefined>();
-
-
   useEffect(() => {
     console.log("zkpoh address:", zkPoHContract?.address);
   }, [zkPoHContract?.address]);
+
+  const { setLogs } = useContext(LogsContext);
+  function handleLog(state: ButtonActionState) {
+    setLogs(state.logs);
+  }
 
   const [ballot, setBallot] = useState("YES");
   const ballots = useZkProofOfHumanitySignals({ contractAddress, externalNullifier: pollId });
@@ -175,7 +179,7 @@ export default function Main() {
                 </Radio>
               </Stack>
             </RadioGroup>
-            <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress}>
+            <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress} onLog={handleLog}>
               Vote
             </ZKPoHConnect>
             <StatGroup w="100%" borderWidth="1px" borderRadius="lg" p={2}>

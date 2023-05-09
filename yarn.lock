@@ -3560,6 +3560,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-no-ssr@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "@types/react-no-ssr@npm:1.1.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: 11f385aa4f8412c92984b38d1d3bae52e5bcfec3dc97d39429990f0c7afbf6eeace7f83b81449ca9b9c6ead557bd601f325f824e7fd9e3c93791ac6a3cdf2c27
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*, @types/react@npm:18.2.0":
   version: 18.2.0
   resolution: "@types/react@npm:18.2.0"
@@ -11491,6 +11500,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-icons@npm:^4.8.0":
+  version: 4.8.0
+  resolution: "react-icons@npm:4.8.0"
+  peerDependencies:
+    react: "*"
+  checksum: 4dbba7ad989c295b410e19b2a702722dae44368cb04b6515f9471353552f31ac80bd350f121d5bff79f81504b84039ede44d09e9f035f48bb1032e6eace126c4
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -13744,6 +13762,7 @@ __metadata:
     "@types/node": 18.16.1
     "@types/react": 18.2.0
     "@types/react-dom": 18.2.1
+    "@types/react-no-ssr": ^1.1.3
     "@wagmi/cli": ^0.1.15
     autoprefixer: 10.4.14
     eslint: 8.39.0
@@ -13754,6 +13773,7 @@ __metadata:
     postcss: 8.4.23
     react: 18.2.0
     react-dom: 18.2.0
+    react-icons: ^4.8.0
     react-no-ssr: ^1.1.0
     tailwindcss: 3.3.2
     typescript: 5.0.4

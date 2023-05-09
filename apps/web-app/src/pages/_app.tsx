@@ -5,6 +5,7 @@ import type { AppProps } from "next/app";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { goerli, localhost } from "wagmi/chains";
 import { InjectedConnector } from "wagmi/connectors/injected";
+import theme from "../styles/index"
 
 export default function App({ Component, pageProps }: AppProps) {
   const { chains, provider } = configureChains([goerli, localhost], [publicProvider()]);
@@ -16,7 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
   });
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <WagmiConfig client={client}>
         <Component {...pageProps} />
       </WagmiConfig>

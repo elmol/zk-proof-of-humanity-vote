@@ -1,20 +1,19 @@
 import { EtherScanLink } from "@/components/EtherScanLink";
 import LogsContext from "@/context/LogsContext";
-import { useZkVotingPollIds, useZkVotingRead } from "@/generated/zk-voting";
+import { useZkVotingRead } from "@/generated/zk-voting";
 import {
   Badge,
-  Box,
   Button,
   Container,
   Flex,
   HStack,
-  Heading,
   Icon,
   IconButton,
   Image,
   Link,
   Radio,
   RadioGroup,
+  SimpleGrid,
   Spacer,
   Stack,
   Stat,
@@ -22,20 +21,20 @@ import {
   StatLabel,
   StatNumber,
   Text,
-  useBreakpointValue,
+  useBreakpointValue
 } from "@chakra-ui/react";
 import { Identity } from "@semaphore-protocol/identity";
 import { BigNumber } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils.js";
-import Head from "next/head";
+import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import NoSSR from "react-no-ssr";
 import { useAccount, useDisconnect, useNetwork } from "wagmi";
 import { ButtonActionState, ConnectionState, ConnectionStateType, ZKPoHConnect, useIsRegisteredInPoH, useZkProofOfHumanity, useZkProofOfHumanitySignals } from "zkpoh-widget";
 import Card from "../components/Card";
+import ListItem from "../components/ListItem";
 import theme from "../styles/index";
-import { useRouter } from "next/router";
 
 export default function Main() {
   const { address, isConnected } = useAccount();
@@ -58,7 +57,7 @@ export default function Main() {
   const { data: pollIds } = useZkVotingRead({
     functionName: "getPollIds",
   });
-  
+
   useEffect(() => {
     setPollId(pollIds ? pollIds[0] : undefined);
   }, [pollIds]);
@@ -106,6 +105,11 @@ export default function Main() {
   function shortenAddress(address: string | undefined | any) {
     if (!address) return "";
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  }
+
+  function viewAllPanels() {
+    if (isConnected && chain && !chain.unsupported) return true;
+    return false;
   }
 
   return (
@@ -179,47 +183,91 @@ export default function Main() {
         </Card>
       </NoSSR>
 
-      <Container maxW={"3xl"}>
-        <Stack as={Box} textAlign={"center"} spacing={{ base: 4, md: 8 }} py={{ base: 20, md: 36 }}>
-          <Heading fontWeight={600} fontSize={{ base: "xl", sm: "2xl", md: "4xl" }} lineHeight={"110%"}>
-            Realm Referendum
-          </Heading>
-          <Text color={"gray.500"}>
-            {pollId && (
-              <Badge variant="subtle" colorScheme="yellow">
-                {pollId.toString()}
-              </Badge>
+      <NoSSR>
+        <Container flex="1" display="flex" maxW={viewAllPanels() ? "100%" : "30%"}>
+          <SimpleGrid columns={{ base: 1, md: 1, lg: viewAllPanels() ? 4 : 1, "2xl": viewAllPanels() ? 4 : 1 }} gap="20px" mb="20px" mt="20px">
+            {viewAllPanels() && (
+              <Card justifyContent="initial" alignItems="left" flexDirection="column" w="100%" mt="0px" h="100%">
+                <Text me="auto" color={"secondaryGray.900"} fontSize="xl" fontWeight="700" lineHeight="100%" mb="5">
+                  Proposals
+                </Text>
+                {pollIds && pollIds.map((number) => <ListItem key={number.toString()} value={number.toString()} />)}
+              </Card>
             )}
-            <br />
-            {proposal && proposal}
-          </Text>
-          <Stack direction={"column"} spacing={3} align={"center"} alignSelf={"center"} position={"relative"}>
-            <RadioGroup onChange={setBallot} value={ballot} defaultValue="YES">
-              <Stack spacing={5} direction="row">
-                <Radio colorScheme="green" value="YES">
-                  Yes 👍
-                </Radio>
-                <Radio colorScheme="red" value="NO">
-                  No 👎
-                </Radio>
+
+            {viewAllPanels() && (
+              <Card alignItems="left" flexDirection="column" w="100%" mb="0px">
+                <NoSSR>
+                  <Stack display="flex" width="100%">
+                    <Text me="auto" color={"secondaryGray.900"} fontSize="xl" fontWeight="700" lineHeight="100%" mb="5">
+                      Proposal
+                    </Text>
+                    <Text color={"gray.500"}>
+                      {pollId && (
+                        <Badge variant="subtle" colorScheme="yellow">
+                          {shortenAddress(pollId?.toString())}
+                        </Badge>
+                      )}
+                      <br />
+                      {proposal && proposal}
+                    </Text>
+                  </Stack>
+                </NoSSR>
+              </Card>
+            )}
+
+            <Card justifyContent="center" alignItems="left" flexDirection="column" mb="0px" h={viewAllPanels() ? "100%" : "300px"}>
+              <Stack direction="column" h="100%">
+                <Text me="auto" color={"secondaryGray.900"} fontSize="xl" fontWeight="700" mt="0px" lineHeight="100%">
+                  Vote
+                </Text>
+                <Stack display="flex" width="100%">
+                  <Stack display="flex" width="95%" height="100%" mt="4">
+                    <Text color={"secondaryGray.800"} fontWeight="600">
+                      {helpText}
+                    </Text>
+                  </Stack>
+                  <RadioGroup onChange={setBallot} value={ballot} defaultValue="YES">
+                    <Stack spacing={5} direction="row">
+                      <Radio colorScheme="green" value="YES">
+                        Yes 👍
+                      </Radio>
+                      <Radio colorScheme="red" value="NO">
+                        No 👎
+                      </Radio>
+                    </Stack>
+                  </RadioGroup>
+                </Stack>
+                <Stack alignItems="flex-end" justifyContent="flex-end" h="100%">
+                  <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress} onLog={handleLog} theme={theme} onChangeState={handleChangeState}>
+                    Vote
+                  </ZKPoHConnect>
+                </Stack>
               </Stack>
-            </RadioGroup>
-            <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress} onLog={handleLog} theme={theme} onChangeState={handleChangeState}>
-              Vote
-            </ZKPoHConnect>
-            <StatGroup w="100%" borderWidth="1px" borderRadius="lg" p={2}>
-              <Stat>
-                <StatNumber>{count("YES")}</StatNumber>
-                <StatLabel>👍</StatLabel>
-              </Stat>
-              <Stat>
-                <StatLabel>👎</StatLabel>
-                <StatNumber>{count("NO")}</StatNumber>
-              </Stat>
-            </StatGroup>
-          </Stack>
-        </Stack>
-      </Container>
+            </Card>
+
+            {viewAllPanels() && (
+              <Card justifyContent="center" alignItems="center" flexDirection="column" w="100%" mb="0px">
+                <Text me="auto" color={"secondaryGray.900"} fontSize="xl" fontWeight="700" lineHeight="100%">
+                  Result of the vote
+                </Text>
+                <Stack alignItems="center" justifyContent="center" h="100%" w="90%">
+                  <StatGroup w="100%" borderWidth="1px" borderRadius="lg" p={2}>
+                    <Stat>
+                      <StatNumber>{count("YES")}</StatNumber>
+                      <StatLabel>👍</StatLabel>
+                    </Stat>
+                    <Stat>
+                      <StatLabel>👎</StatLabel>
+                      <StatNumber>{count("NO")}</StatNumber>
+                    </Stat>
+                  </StatGroup>
+                </Stack>
+              </Card>
+            )}
+          </SimpleGrid>
+        </Container>
+      </NoSSR>
     </>
   );
 }

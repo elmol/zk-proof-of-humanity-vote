@@ -21,7 +21,7 @@ import {
   StatLabel,
   StatNumber,
   Text,
-  useBreakpointValue
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { Identity } from "@semaphore-protocol/identity";
 import { BigNumber } from "ethers";
@@ -92,7 +92,7 @@ export default function Main() {
     }
   }
 
-  const [ballot, setBallot] = useState("YES");
+  const [selectedVote, setSelectedVote] = useState("YES");
   const ballots = useZkProofOfHumanitySignals({ contractAddress, externalNullifier: pollId });
   const count = useCallback(
     (ballotType: string) => {
@@ -227,19 +227,25 @@ export default function Main() {
                       {helpText}
                     </Text>
                   </Stack>
-                  <RadioGroup onChange={setBallot} value={ballot} defaultValue="YES">
-                    <Stack spacing={5} direction="row">
-                      <Radio colorScheme="green" value="YES">
-                        Yes 👍
-                      </Radio>
-                      <Radio colorScheme="red" value="NO">
-                        No 👎
-                      </Radio>
-                    </Stack>
-                  </RadioGroup>
+                  {connectionStateType == "CAST_SIGNAL" && (
+                    <RadioGroup onChange={setSelectedVote} value={selectedVote} defaultValue="YES" pt="10">
+                      <Stack direction="row">
+                        <Card bg={"secondaryGray.600"} height="200px" px="5px" mx="auto">
+                          <Radio colorScheme="green" value="YES">
+                            Yes 👍
+                          </Radio>
+                        </Card>
+                        <Card bg={"secondaryGray.600"} height="200px" px="5px" mx="auto">
+                          <Radio colorScheme="red" value="NO">
+                            No 👎
+                          </Radio>
+                        </Card>
+                      </Stack>
+                    </RadioGroup>
+                  )}
                 </Stack>
                 <Stack alignItems="flex-end" justifyContent="flex-end" h="100%">
-                  <ZKPoHConnect externalNullifier={pollId} signal={ballot} contractAddress={contractAddress} onLog={handleLog} theme={theme} onChangeState={handleChangeState}>
+                  <ZKPoHConnect externalNullifier={pollId} signal={selectedVote} contractAddress={contractAddress} onLog={handleLog} theme={theme} onChangeState={handleChangeState}>
                     Vote
                   </ZKPoHConnect>
                 </Stack>

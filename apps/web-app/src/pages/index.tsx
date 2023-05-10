@@ -35,11 +35,17 @@ import { ButtonActionState, ConnectionState, ConnectionStateType, ZKPoHConnect, 
 import Card from "../components/Card";
 import ListItem from "../components/ListItem";
 import theme from "../styles/index";
+import parse from "html-react-parser";
 
 export default function Main() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { chain } = useNetwork();
+
+  const zkPoHConfig = {
+    confirmationMessage: "The vote was cast successfully 🗳️",
+    helpText: "Your identity is registered in ZK Proof of Humanity and generated, so now you can now vote on the proposal.",
+  };
 
   const [pollId, setPollId] = useState<BigNumber | undefined>();
   const router = useRouter();
@@ -202,14 +208,14 @@ export default function Main() {
                     <Text me="auto" color={"secondaryGray.900"} fontSize="xl" fontWeight="700" lineHeight="100%" mb="5">
                       Proposal
                     </Text>
-                    <Text color={"gray.500"}>
-                      {pollId && (
-                        <Badge variant="subtle" colorScheme="yellow">
-                          {shortenAddress(pollId?.toString())}
-                        </Badge>
-                      )}
-                      <br />
-                      {proposal && proposal}
+                    <Text color={"secondaryGray.800"} fontWeight="600">
+                      Id: {shortenAddress(pollId?.toString())}
+                    </Text>
+                    <Text color={"secondaryGray.900"} fontWeight="600">
+                      Details:
+                    </Text>
+                    <Text color={"secondaryGray.800"} fontWeight="600">
+                      {proposal ? parse(proposal) : ""}
                     </Text>
                   </Stack>
                 </NoSSR>
@@ -231,21 +237,27 @@ export default function Main() {
                     <RadioGroup onChange={setSelectedVote} value={selectedVote} defaultValue="YES" pt="10">
                       <Stack direction="row">
                         <Card bg={"secondaryGray.600"} height="200px" px="5px" mx="auto">
-                          <Radio colorScheme="green" value="YES">
-                            Yes 👍
-                          </Radio>
+                          <Flex direction="column" py="5px" me="10px" w="100%" alignItems="center" justifyContent="flex-end" h="100%">
+                            <Image borderRadius="full" boxSize="150px" src="./yes.png" alt="YES" p="3" />
+                            <Radio color={"primary.800"} value="YES" colorScheme="green">
+                              Yes
+                            </Radio>
+                          </Flex>
                         </Card>
                         <Card bg={"secondaryGray.600"} height="200px" px="5px" mx="auto">
-                          <Radio colorScheme="red" value="NO">
-                            No 👎
-                          </Radio>
+                          <Flex direction="column" py="5px" me="10px" w="100%" alignItems="center" justifyContent="flex-end" h="100%">
+                            <Image borderRadius="full" boxSize="150px" src="./no.png" alt="NO" p="3" />
+                            <Radio color={"primary.800"} colorScheme="red" value="NO">
+                              No
+                            </Radio>
+                          </Flex>
                         </Card>
                       </Stack>
                     </RadioGroup>
                   )}
                 </Stack>
                 <Stack alignItems="flex-end" justifyContent="flex-end" h="100%">
-                  <ZKPoHConnect externalNullifier={pollId} signal={selectedVote} contractAddress={contractAddress} onLog={handleLog} theme={theme} onChangeState={handleChangeState}>
+                  <ZKPoHConnect theme={theme} onChangeState={handleChangeState} onLog={handleLog} signal={selectedVote} externalNullifier={pollId} {...zkPoHConfig}>
                     Vote
                   </ZKPoHConnect>
                 </Stack>

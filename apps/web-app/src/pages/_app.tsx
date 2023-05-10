@@ -6,13 +6,13 @@ import { publicProvider } from "@wagmi/core/providers/public";
 import type { AppProps } from "next/app";
 import { useState } from "react";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
-import { goerli, localhost } from "wagmi/chains";
+import { goerli, localhost, sepolia } from "wagmi/chains";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import theme from "../styles/index";
 import Head from "next/head";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { chains, provider } = configureChains([goerli, localhost], [publicProvider()]);
+  const { chains, provider } = configureChains([goerli, sepolia, localhost], [publicProvider()]);
 
   const client = createClient({
     autoConnect: true,

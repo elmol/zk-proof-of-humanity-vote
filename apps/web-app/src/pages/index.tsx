@@ -16,6 +16,7 @@ import Card from "../components/Card";
 import ListItem from "../components/ListItem";
 import theme from "../styles/index";
 
+const GOERLI_ZKPOH_ADDRESS = "0x3575E04983C401f26fA02FC09f6EE97e44dF296B";
 export default function Main() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -52,7 +53,11 @@ export default function Main() {
     args: [pollId ? pollId : BigNumber.from("0")],
   });
 
-  const contractAddress = "0x3575E04983C401f26fA02FC09f6EE97e44dF296B";
+  const [contractAddress, setContractAddress] = useState<`0x${string}` | undefined>(GOERLI_ZKPOH_ADDRESS);
+  useEffect(() => {
+    setContractAddress(chain?.name == "Localhost" ? GOERLI_ZKPOH_ADDRESS : undefined);
+  }, [chain?.name]);
+
   const zkPoHContract = useZkProofOfHumanity({ contractAddress });
 
   const { isHuman } = useIsRegisteredInPoH({ address, contractAddress });

@@ -23,9 +23,9 @@ async function main() {
 
   console.info(`ZKVoting contract has been deployed to: ${contract.address} `)
   console.info(`ZKVoting poll 1 id: `, pollId1)
-  console.info(`ZKVoting proposal: `, proposal1)
-  console.info(`ZKVoting poll 2 id: `, pollId1)
-  console.info(`ZKVoting proposal: `, proposal1)
+  console.info(`ZKVoting proposal: `, proposal2)
+  console.info(`ZKVoting poll 2 id: `, pollId2)
+  console.info(`ZKVoting proposal: `, proposal2)
 
 }
 

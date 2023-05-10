@@ -35,15 +35,34 @@ import { useAccount, useDisconnect, useNetwork } from "wagmi";
 import { ButtonActionState, ConnectionState, ConnectionStateType, ZKPoHConnect, useIsRegisteredInPoH, useZkProofOfHumanity, useZkProofOfHumanitySignals } from "zkpoh-widget";
 import Card from "../components/Card";
 import theme from "../styles/index";
+import { useRouter } from "next/router";
 
 export default function Main() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { chain } = useNetwork();
 
-  const { data: pollId } = useZkVotingPollIds({
-    args: [BigNumber.from("0")],
+  const [pollId, setPollId] = useState<BigNumber | undefined>();
+  const router = useRouter();
+  useEffect(() => {
+    const pollId = router.query.pollId;
+    if (!pollId) {
+      console.error("*** Invalid pollId");
+      return;
+    }
+    const pollIdBig = BigNumber.from(pollId);
+    console.log("*** Specific PollId: ", pollId);
+    setPollId(pollIdBig);
+  }, [router.query.pollId]);
+
+  const { data: pollIds } = useZkVotingRead({
+    functionName: "getPollIds",
   });
+  
+  useEffect(() => {
+    setPollId(pollIds ? pollIds[0] : undefined);
+  }, [pollIds]);
+
   const { data: proposal } = useZkVotingRead({
     functionName: "polls",
     args: [pollId ? pollId : BigNumber.from("0")],

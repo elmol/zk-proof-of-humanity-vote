@@ -1,31 +1,11 @@
 import { EtherScanLink } from "@/components/EtherScanLink";
 import LogsContext from "@/context/LogsContext";
 import { useZkVotingRead } from "@/generated/zk-voting";
-import {
-  Badge,
-  Button,
-  Container,
-  Flex,
-  HStack,
-  Icon,
-  IconButton,
-  Image,
-  Link,
-  Radio,
-  RadioGroup,
-  SimpleGrid,
-  Spacer,
-  Stack,
-  Stat,
-  StatGroup,
-  StatLabel,
-  StatNumber,
-  Text,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+import { Box, Button, Container, Flex, HStack, Icon, IconButton, Image, Link, Radio, RadioGroup, SimpleGrid, Spacer, Stack, Text, useBreakpointValue } from "@chakra-ui/react";
 import { Identity } from "@semaphore-protocol/identity";
 import { BigNumber } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils.js";
+import parse from "html-react-parser";
 import { useRouter } from "next/router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
@@ -35,7 +15,6 @@ import { ButtonActionState, ConnectionState, ConnectionStateType, ZKPoHConnect, 
 import Card from "../components/Card";
 import ListItem from "../components/ListItem";
 import theme from "../styles/index";
-import parse from "html-react-parser";
 
 export default function Main() {
   const { address, isConnected } = useAccount();
@@ -99,13 +78,24 @@ export default function Main() {
   }
 
   const [selectedVote, setSelectedVote] = useState("YES");
-  const ballots = useZkProofOfHumanitySignals({ contractAddress, externalNullifier: pollId });
+
+  const votes = useZkProofOfHumanitySignals({ contractAddress, externalNullifier: pollId });
   const count = useCallback(
-    (ballotType: string) => {
-      const ballot32Type = formatBytes32String(ballotType);
-      return ballots?.reduce((n: number, ballot: any) => (BigNumber.from(ballot.signal).eq(BigNumber.from(ballot32Type)) ? n + 1 : n), 0);
+    (voteType: string) => {
+      const ballot32Type = formatBytes32String(voteType);
+      return votes?.reduce((n: number, ballot: any) => (BigNumber.from(ballot.signal).eq(BigNumber.from(ballot32Type)) ? n + 1 : n), 0);
     },
-    [ballots]
+    [votes]
+  );
+
+  const percentage = useCallback(
+    (voteType: string) => {
+      if (!votes) return 0;
+      const totalVotes = votes.length;
+      const _percentage = (count(voteType) * 100) / totalVotes;
+      return isNaN(_percentage) ? 0 : _percentage;
+    },
+    [count, votes]
   );
 
   function shortenAddress(address: string | undefined | any) {
@@ -257,7 +247,7 @@ export default function Main() {
                   )}
                 </Stack>
                 <Stack alignItems="flex-end" justifyContent="flex-end" h="100%">
-                  <ZKPoHConnect theme={theme} onChangeState={handleChangeState} onLog={handleLog} signal={selectedVote} externalNullifier={pollId} {...zkPoHConfig}>
+                  <ZKPoHConnect theme={theme} onChangeState={handleChangeState} onLog={handleLog} signal={selectedVote} externalNullifier={pollId} {...zkPoHConfig} contractAddress={contractAddress}>
                     Vote
                   </ZKPoHConnect>
                 </Stack>
@@ -270,16 +260,37 @@ export default function Main() {
                   Result of the vote
                 </Text>
                 <Stack alignItems="center" justifyContent="center" h="100%" w="90%">
-                  <StatGroup w="100%" borderWidth="1px" borderRadius="lg" p={2}>
-                    <Stat>
-                      <StatNumber>{count("YES")}</StatNumber>
-                      <StatLabel>👍</StatLabel>
-                    </Stat>
-                    <Stat>
-                      <StatLabel>👎</StatLabel>
-                      <StatNumber>{count("NO")}</StatNumber>
-                    </Stat>
-                  </StatGroup>
+                  <Card bg={"secondaryGray.900"} flexDirection="column" w="100%" p="15px" px="20px" mt="15px" mx="auto">
+                    <Flex direction="row" alignItems="center">
+                      <Flex direction="column" py="5px" w="50%" alignItems="center">
+                        <Flex align="center">
+                          <Box h="8px" w="8px" bg="green.500" borderRadius="50%" me="4px" />
+                          <Text fontSize="xs" color="secondaryGray.100" fontWeight="700" mb="5px">
+                            Yes
+                          </Text>
+                        </Flex>
+                        <Text fontSize="lg" color="secondaryGray.100" fontWeight="900">
+                          ({percentage("YES")}%)
+                        </Text>
+                      </Flex>
+                      <Flex direction="column" py="5px" me="10px" w="50%" alignItems="center">
+                        <Flex align="center">
+                          <Box h="8px" w="8px" bg="red.600" borderRadius="50%" me="4px" />
+                          <Text fontSize="xs" color="secondaryGray.100" fontWeight="700" mb="5px">
+                            No
+                          </Text>
+                        </Flex>
+                        <Text fontSize="lg" color="secondaryGray.100" fontWeight="900">
+                          ({percentage("NO")}%)
+                        </Text>
+                      </Flex>
+                    </Flex>
+                    <Flex direction="column" alignItems="center" pt="5">
+                      <Text fontSize="lg" color="secondaryGray.100" fontWeight="900">
+                        <b>Total votes:</b> {!votes ? 0 : votes.length}
+                      </Text>
+                    </Flex>
+                  </Card>
                 </Stack>
               </Card>
             )}

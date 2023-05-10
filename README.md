@@ -7,7 +7,7 @@ Following you find a step-by-step guide link, which, it shows how to get started
 
 You can try out a functional version of the zkPoH Vote application that supports Goerli and Sepolia networks at https://zk-proof-of-humanity-vote.vercel.app/.
 
-# "Local setup for zkPoH Vote
+# Local setup for zkPoH Vote
 
 ## Installation
 
